@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 
 import httpx
 
+from ..categories import AI_RESEARCH, classify
 from ..models import NewsItem
 from .base import NewsSource, SourceError
 
@@ -39,7 +40,7 @@ class ArxivSource(NewsSource):
 
     slug = "arxiv"
     label = "arXiv"
-    category = "AI Research"
+    category = AI_RESEARCH
 
     def __init__(self, categories: tuple[str, ...] = DEFAULT_CATEGORIES) -> None:
         self.categories = categories
@@ -95,13 +96,14 @@ class ArxivSource(NewsSource):
         if not entry_id or not title or published is None:
             return None
 
+        summary = _summarise(entry.findtext(f"{ATOM}summary") or "")
         return NewsItem(
             id=f"{self.slug}:{entry_id.rsplit('/', 1)[-1]}",
             title=title,
-            summary=_summarise(entry.findtext(f"{ATOM}summary") or ""),
+            summary=summary,
             source=self.label,
             published_at=published,
-            category=self.category,
+            category=classify(title, summary, default=self.category),
             url=entry_id or None,
         )
 
