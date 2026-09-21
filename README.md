@@ -16,7 +16,7 @@ Use two terminals:
 ```sh
 cd api
 uv sync --group dev
-uv run fastapi dev src/beacon_api/main.py --port 8000
+uv run fastapi dev src/beacon_api/main.py --port 8100
 ```
 
 ```sh
@@ -25,7 +25,7 @@ pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:5173`. Vite proxies `/api` requests to the backend. The API is also available at `http://localhost:8000`, with interactive documentation at `/docs`.
+Open `http://localhost:5180`. Vite proxies `/api` requests to the backend. The API is also available at `http://localhost:8100`, with interactive documentation at `/docs`.
 
 ## API contract workflow
 
@@ -48,4 +48,4 @@ cd spa && pnpm typecheck && pnpm build
 
 ## Configuration
 
-`BEACON_CORS_ORIGINS` accepts a JSON list of allowed browser origins. It defaults to `["http://localhost:5173"]` for local development.
+`BEACON_CORS_ORIGINS` accepts a JSON list of allowed browser origins. It defaults to `["http://localhost:5180"]` for local development.

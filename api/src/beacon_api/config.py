@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="BEACON_", case_sensitive=False)
 
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: list[str] = ["http://localhost:5180"]
 
 
 @lru_cache

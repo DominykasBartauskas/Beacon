@@ -30,7 +30,7 @@ export default function App() {
         setDashboard(nextDashboard)
         setNews(nextNews.items)
       })
-      .catch(() => setError('Beacon could not reach the local API. Start it on port 8000 and refresh.'))
+      .catch(() => setError('Beacon could not reach the local API. Start it on port 8100 and refresh.'))
   }, [])
 
   return (
