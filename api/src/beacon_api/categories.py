@@ -33,10 +33,12 @@ RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
         MODELS_RELEASES,
         (
-            "release", "releases", "released", "launch", "launches", "announcing",
-            "introducing", "open-weight", "open weights", "checkpoint", "model card",
-            "now available", "general availability", "version", "v2", "v3",
-            "fine-tune", "finetuned", "quantized", "distilled", "sota",
+            # Deliberately not "release"/"version": a library release is Tools,
+            # not a model release, and only the source knows which it publishes.
+            "announcing", "introducing", "open-weight", "open weights",
+            "checkpoint", "model card", "pretrained model", "base model",
+            "instruct model", "fine-tune", "finetuned", "quantized", "distilled",
+            "sota", "state-of-the-art",
         ),
     ),
     (

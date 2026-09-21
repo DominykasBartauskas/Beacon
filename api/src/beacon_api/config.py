@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     news_cache_ttl_seconds: int = 900
     news_fetch_limit: int = 30
     news_request_timeout_seconds: float = 6.0
+    github_token: str = ""
 
 
 @lru_cache
