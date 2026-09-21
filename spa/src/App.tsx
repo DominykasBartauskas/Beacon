@@ -6,17 +6,24 @@ type SampleStory = { id: string; category: string; title: string; summary: strin
 
 const navItems: NavItem[] = [
   { id: 'overview', label: 'Overview', icon: <GridIcon /> },
-  { id: 'local', label: 'Local pulse', icon: <PulseIcon />, badge: '8' },
-  { id: 'topics', label: 'Topics', icon: <LayersIcon /> },
-  { id: 'briefing', label: 'Daily briefing', icon: <BriefingIcon /> },
-  { id: 'saved', label: 'Saved', icon: <BookmarkIcon /> },
+  { id: 'ai-research', label: 'AI Research', icon: <PulseIcon />, badge: '8' },
+  { id: 'models-releases', label: 'Models & Releases', icon: <LayersIcon /> },
+  { id: 'ai-engineering', label: 'AI Engineering', icon: <BriefingIcon /> },
+  { id: 'software-development', label: 'Software Development', icon: <GridIcon /> },
+  { id: 'tools-platforms', label: 'Tools & Platforms', icon: <LayersIcon /> },
+  { id: 'ai-products-applications', label: 'AI Products & Applications', icon: <PulseIcon /> },
+  { id: 'safety-security', label: 'Safety & Security', icon: <BriefingIcon /> },
+  { id: 'saved-stories', label: 'Saved Stories', icon: <BookmarkIcon /> },
 ]
 
 const sampleStories: SampleStory[] = [
-  { id: 'night-market', category: 'Community', title: 'A neighborhood night market is taking shape for next month', summary: 'Organizers are collecting vendor ideas and inviting residents to help shape the first evening edition.', source: 'Beacon sample desk', time: 'Demo · 18 min', tone: 'blue', featured: true },
-  { id: 'library', category: 'Civic life', title: 'Library hours are being reimagined with community input', summary: 'A short survey is collecting ideas for quieter mornings and later study sessions.', source: 'Beacon sample desk', time: 'Demo · 42 min', tone: 'cool' },
-  { id: 'crosswalk', category: 'Getting around', title: 'A safer crossing is proposed near the school entrance', summary: 'The early concept adds better visibility and a slower approach for morning arrivals.', source: 'Beacon sample desk', time: 'Demo · 1 hr', tone: 'warm' },
-  { id: 'artists', category: 'Culture', title: 'Open studios will put emerging artists on the neighborhood map', summary: 'The weekend route connects workspaces, makers and a handful of temporary exhibits.', source: 'Beacon sample desk', time: 'Demo · 2 hr', tone: 'blue' },
+  { id: 'multimodal-benchmarks', category: 'AI Research', title: 'A new multimodal benchmark focuses on reasoning through ambiguous scenes', summary: 'The fictional study compares how systems handle incomplete visual evidence and conflicting instructions.', source: 'Beacon sample desk', time: 'Demo · 18 min', tone: 'blue', featured: true },
+  { id: 'context-model', category: 'Models & Releases', title: 'A sample long-context model release puts traceability at the center', summary: 'Its imagined release notes highlight source references, predictable retrieval, and cleaner handoffs.', source: 'Beacon sample desk', time: 'Demo · 42 min', tone: 'cool' },
+  { id: 'evaluation-loop', category: 'AI Engineering', title: 'Teams are sketching a lighter evaluation loop for fast-moving prompts', summary: 'The demo workflow pairs representative tasks with a small, repeatable human review checkpoint.', source: 'Beacon sample desk', time: 'Demo · 1 hr', tone: 'warm' },
+  { id: 'review-assistant', category: 'Software Development', title: 'A code review assistant concept is designed around small, explainable diffs', summary: 'The prototype imagines concise context, clear uncertainty, and a deliberate approval step.', source: 'Beacon sample desk', time: 'Demo · 2 hr', tone: 'blue' },
+  { id: 'workflow-platform', category: 'Tools & Platforms', title: 'A workspace platform prototype connects experiments without hiding the seams', summary: 'The sample design keeps runs, prompts, and feedback visible in one calm working surface.', source: 'Beacon sample desk', time: 'Demo · 3 hr', tone: 'cool' },
+  { id: 'research-companion', category: 'AI Products & Applications', title: 'A research companion concept helps turn reading lists into useful questions', summary: 'The fictional product clusters notes and drafts follow-ups without presenting them as conclusions.', source: 'Beacon sample desk', time: 'Demo · 4 hr', tone: 'blue' },
+  { id: 'red-team', category: 'Safety & Security', title: 'A red-team exercise explores safer defaults for tool-using assistants', summary: 'The sample scenario uses permission boundaries and clear escalation paths for sensitive actions.', source: 'Beacon sample desk', time: 'Demo · 5 hr', tone: 'warm' },
 ]
 
 const fallbackMetrics = [
@@ -49,7 +56,7 @@ export default function App() {
   useEffect(() => { beaconApi.dashboard().then(setDashboard).catch(() => undefined) }, [])
   const metrics = dashboard?.metrics ?? fallbackMetrics
   const visibleStories = useMemo(() => activeFilter === 'All' ? sampleStories : sampleStories.filter((story) => story.category === activeFilter), [activeFilter])
-  const greeting = activeNav === 'overview' ? 'Your neighborhood, in focus.' : navItems.find((item) => item.id === activeNav)?.label ?? 'Your neighborhood, in focus.'
+  const greeting = activeNav === 'overview' ? 'Your AI signal, in focus.' : navItems.find((item) => item.id === activeNav)?.label ?? 'Your AI signal, in focus.'
 
   return <div className="app-shell">
     <aside className="sidebar">
@@ -59,10 +66,10 @@ export default function App() {
       <div className="sidebar-bottom"><div className="sidebar-callout"><span className="callout-icon">✦</span><div><strong>Make it yours</strong><p>Choose the places and topics you care about.</p></div><button type="button" aria-label="Set up your dashboard">→</button></div><button className="profile" type="button"><span className="avatar">JD</span><span><strong>Jamie Doe</strong><small>Personal space</small></span><span className="more">•••</span></button></div>
     </aside>
     <main className="dashboard-main">
-      <header className="topbar"><button className="location-button" type="button"><span className="location-pin">⌖</span>Northside <span>⌄</span></button><div className="topbar-actions"><button className="search-control" type="button"><SearchIcon /><span>Search your feed</span><kbd>⌘ K</kbd></button><button className="icon-button" type="button" aria-label="Notifications"><BellIcon /><i className="notification-dot" /></button><button className="mobile-avatar" type="button" aria-label="Account">JD</button></div></header>
-      <section className="welcome" aria-labelledby="page-title"><div><p className="eyebrow"><span />MONDAY, SEPTEMBER 21</p><h1 id="page-title">{greeting}</h1><p className="welcome-copy">A thoughtful starting point for what’s being imagined, discussed, and built around you.</p></div><div className="demo-note"><span>◌</span><div><strong>Demo workspace</strong><p>Everything below is sample content.</p></div></div></section>
-      <section className="metrics" aria-label="Neighborhood summary">{metrics.map((metric, index) => <article className="metric" key={metric.label}><div className={`metric-icon metric-icon--${index}`}><span>{index === 0 ? '◒' : index === 1 ? '◫' : '♡'}</span></div><div><p>{metric.label}</p><strong>{metric.value}</strong><small>{metric.change}</small></div></article>)}</section>
-      <section className="feed-section" aria-labelledby="radar-heading"><div className="section-heading"><div><p className="eyebrow"><span />CURATED FOR YOU</p><h2 id="radar-heading">On your radar</h2></div><button className="view-all" type="button">View sample archive <ArrowIcon /></button></div><div className="filters" aria-label="Filter sample stories">{['All', 'Community', 'Civic life', 'Getting around', 'Culture'].map((filter) => <button key={filter} type="button" className={activeFilter === filter ? 'filter active' : 'filter'} onClick={() => setActiveFilter(filter)}>{filter}</button>)}</div><div className="stories">{visibleStories.map((story) => <StoryCard key={story.id} story={story} />)}</div></section>
+      <header className="topbar"><button className="location-button" type="button"><span className="location-pin">⌖</span>AI Desk <span>⌄</span></button><div className="topbar-actions"><button className="search-control" type="button"><SearchIcon /><span>Search your feed</span><kbd>⌘ K</kbd></button><button className="icon-button" type="button" aria-label="Notifications"><BellIcon /><i className="notification-dot" /></button><button className="mobile-avatar" type="button" aria-label="Account">JD</button></div></header>
+      <section className="welcome" aria-labelledby="page-title"><div><p className="eyebrow"><span />MONDAY, SEPTEMBER 21</p><h1 id="page-title">{greeting}</h1><p className="welcome-copy">A thoughtful starting point for the ideas, releases, and working practices shaping AI.</p></div><div className="demo-note"><span>◌</span><div><strong>Demo workspace</strong><p>Everything below is sample content.</p></div></div></section>
+      <section className="metrics" aria-label="AI dashboard summary">{metrics.map((metric, index) => <article className="metric" key={metric.label}><div className={`metric-icon metric-icon--${index}`}><span>{index === 0 ? '◒' : index === 1 ? '◫' : '♡'}</span></div><div><p>{metric.label}</p><strong>{metric.value}</strong><small>{metric.change}</small></div></article>)}</section>
+      <section className="feed-section" aria-labelledby="radar-heading"><div className="section-heading"><div><p className="eyebrow"><span />CURATED FOR YOU</p><h2 id="radar-heading">On your radar</h2></div><button className="view-all" type="button">View sample archive <ArrowIcon /></button></div><div className="filters" aria-label="Filter sample stories">{['All', 'AI Research', 'Models & Releases', 'AI Engineering', 'Software Development', 'Tools & Platforms', 'AI Products & Applications', 'Safety & Security'].map((filter) => <button key={filter} type="button" className={activeFilter === filter ? 'filter active' : 'filter'} onClick={() => setActiveFilter(filter)}>{filter}</button>)}</div><div className="stories">{visibleStories.map((story) => <StoryCard key={story.id} story={story} />)}</div></section>
       <footer>Beacon concept dashboard <span>•</span> Sample content only</footer>
     </main>
   </div>
