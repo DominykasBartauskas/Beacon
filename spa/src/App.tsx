@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { beaconApi, type Dashboard } from './api/client'
 
 type NavItem = { id: string; label: string; icon: ReactNode; badge?: string }
@@ -25,6 +25,17 @@ const sampleStories: SampleStory[] = [
   { id: 'research-companion', category: 'AI Products & Applications', title: 'A research companion concept helps turn reading lists into useful questions', summary: 'The fictional product clusters notes and drafts follow-ups without presenting them as conclusions.', source: 'Beacon sample desk', time: 'Demo · 4 hr', tone: 'blue' },
   { id: 'red-team', category: 'Safety & Security', title: 'A red-team exercise explores safer defaults for tool-using assistants', summary: 'The sample scenario uses permission boundaries and clear escalation paths for sensitive actions.', source: 'Beacon sample desk', time: 'Demo · 5 hr', tone: 'warm' },
 ]
+
+type SampleNotification = { id: string; kind: 'digest' | 'topic' | 'source'; title: string; detail: string; time: string; unread: boolean }
+
+const sampleNotifications: SampleNotification[] = [
+  { id: 'daily-digest', kind: 'digest', title: 'Your morning digest is ready', detail: '6 sample stories across AI Research and Tools & Platforms.', time: '12 min ago', unread: true },
+  { id: 'topic-spike', kind: 'topic', title: 'Evaluation tooling is picking up', detail: 'A topic you follow appeared in 3 demo stories today.', time: '1 hr ago', unread: true },
+  { id: 'new-source', kind: 'source', title: 'A new sample source was added', detail: 'Beacon sample desk is now part of your Local sources.', time: 'Yesterday', unread: false },
+  { id: 'saved-reminder', kind: 'digest', title: 'Two saved stories are waiting', detail: 'They have been in Saved Stories since last week.', time: '2 days ago', unread: false },
+]
+
+const notificationGlyphs: Record<SampleNotification['kind'], string> = { digest: '◒', topic: '◫', source: '✦' }
 
 const fallbackMetrics = [
   { label: 'Stories in view', value: '08', change: 'Sample selection' },
@@ -53,8 +64,23 @@ export default function App() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null)
   const [activeNav, setActiveNav] = useState('overview')
   const [activeFilter, setActiveFilter] = useState('All')
+  const [query, setQuery] = useState('')
+  const [notifications, setNotifications] = useState(sampleNotifications)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const notificationsRef = useRef<HTMLDivElement>(null)
   useEffect(() => { beaconApi.dashboard().then(setDashboard).catch(() => undefined) }, [])
+  useEffect(() => {
+    if (!notificationsOpen) return
+    const onPointerDown = (event: MouseEvent) => { if (!notificationsRef.current?.contains(event.target as Node)) setNotificationsOpen(false) }
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setNotificationsOpen(false) }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => { document.removeEventListener('mousedown', onPointerDown); document.removeEventListener('keydown', onKeyDown) }
+  }, [notificationsOpen])
   const metrics = dashboard?.metrics ?? fallbackMetrics
+  const unreadCount = notifications.filter((item) => item.unread).length
+  const markAllRead = () => setNotifications((items) => items.map((item) => ({ ...item, unread: false })))
+  const markRead = (id: string) => setNotifications((items) => items.map((item) => item.id === id ? { ...item, unread: false } : item))
   const visibleStories = useMemo(() => activeFilter === 'All' ? sampleStories : sampleStories.filter((story) => story.category === activeFilter), [activeFilter])
   const greeting = activeNav === 'overview' ? 'Your AI signal, in focus.' : navItems.find((item) => item.id === activeNav)?.label ?? 'Your AI signal, in focus.'
 
@@ -66,9 +92,8 @@ export default function App() {
       <div className="sidebar-bottom"><div className="sidebar-callout"><span className="callout-icon">✦</span><div><strong>Make it yours</strong><p>Choose the places and topics you care about.</p></div><button type="button" aria-label="Set up your dashboard">→</button></div><button className="profile" type="button"><span className="avatar">JD</span><span><strong>Jamie Doe</strong><small>Personal space</small></span><span className="more">•••</span></button></div>
     </aside>
     <main className="dashboard-main">
-      <header className="topbar"><button className="location-button" type="button"><span className="location-pin">⌖</span>AI Desk <span>⌄</span></button><div className="topbar-actions"><button className="search-control" type="button"><SearchIcon /><span>Search your feed</span><kbd>⌘ K</kbd></button><button className="icon-button" type="button" aria-label="Notifications"><BellIcon /><i className="notification-dot" /></button><button className="mobile-avatar" type="button" aria-label="Account">JD</button></div></header>
-      <section className="welcome" aria-labelledby="page-title"><div><p className="eyebrow"><span />MONDAY, SEPTEMBER 21</p><h1 id="page-title">{greeting}</h1><p className="welcome-copy">A thoughtful starting point for the ideas, releases, and working practices shaping AI.</p></div><div className="demo-note"><span>◌</span><div><strong>Demo workspace</strong><p>Everything below is sample content.</p></div></div></section>
-      <section className="metrics" aria-label="AI dashboard summary">{metrics.map((metric, index) => <article className="metric" key={metric.label}><div className={`metric-icon metric-icon--${index}`}><span>{index === 0 ? '◒' : index === 1 ? '◫' : '♡'}</span></div><div><p>{metric.label}</p><strong>{metric.value}</strong><small>{metric.change}</small></div></article>)}</section>
+      <header className="topbar"><div className="topbar-metrics" aria-label="AI dashboard summary">{metrics.map((metric) => <div className="topbar-metric" key={metric.label}><p>{metric.label}</p><span><strong>{metric.value}</strong><small>{metric.change}</small></span></div>)}</div><div className="topbar-actions"><div className="search-field"><div className="search-control"><SearchIcon /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search your feed" aria-label="Search your feed" /></div></div><div className="notifications" ref={notificationsRef}><button className="icon-button" type="button" aria-haspopup="dialog" aria-expanded={notificationsOpen} aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'} onClick={() => setNotificationsOpen((open) => !open)}><BellIcon />{unreadCount > 0 && <i className="notification-dot" />}</button>{notificationsOpen && <div className="notifications-panel" role="dialog" aria-label="Notifications"><header><h2>Notifications</h2>{unreadCount > 0 && <button type="button" onClick={markAllRead}>Mark all read</button>}</header><ul>{notifications.map((item) => <li key={item.id}><button type="button" className={item.unread ? 'notification unread' : 'notification'} onClick={() => markRead(item.id)}><span className="notification-glyph" aria-hidden="true">{notificationGlyphs[item.kind]}</span><span className="notification-body"><strong>{item.title}</strong><small>{item.detail}</small><em>{item.time}</em></span>{item.unread && <span className="notification-unread" aria-label="Unread" />}</button></li>)}</ul><footer>Sample notifications · the API does not serve these yet</footer></div>}</div><button className="mobile-avatar" type="button" aria-label="Account">JD</button></div></header>
+      <section className="welcome" aria-labelledby="page-title"><div><p className="eyebrow"><span />MONDAY, SEPTEMBER 21</p><h1 id="page-title">{greeting}</h1><p className="welcome-copy">A thoughtful starting point for the ideas, releases, and working practices shaping AI.</p></div></section>
       <section className="feed-section" aria-labelledby="radar-heading"><div className="section-heading"><div><p className="eyebrow"><span />CURATED FOR YOU</p><h2 id="radar-heading">On your radar</h2></div><button className="view-all" type="button">View sample archive <ArrowIcon /></button></div><div className="filters" aria-label="Filter sample stories">{['All', 'AI Research', 'Models & Releases', 'AI Engineering', 'Software Development', 'Tools & Platforms', 'AI Products & Applications', 'Safety & Security'].map((filter) => <button key={filter} type="button" className={activeFilter === filter ? 'filter active' : 'filter'} onClick={() => setActiveFilter(filter)}>{filter}</button>)}</div><div className="stories">{visibleStories.map((story) => <StoryCard key={story.id} story={story} />)}</div></section>
       <footer>Beacon concept dashboard <span>•</span> Sample content only</footer>
     </main>
