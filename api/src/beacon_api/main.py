@@ -1,12 +1,13 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 
 import httpx
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .data import METRICS, NOW
+from .metrics import summarise
 from .models import DashboardResponse, HealthResponse, NewsListResponse
 from .news import NewsService
 
@@ -65,8 +66,8 @@ async def list_news(
 async def dashboard(news: NewsService = Depends(get_news_service)) -> DashboardResponse:
     items = await news.items()
     return DashboardResponse(
-        headline="Your local signal, at a glance.",
-        updated_at=NOW,
-        metrics=METRICS,
+        headline="Your AI signal, at a glance.",
+        updated_at=datetime.now(UTC),
+        metrics=summarise(items),
         featured_news=items[:3],
     )

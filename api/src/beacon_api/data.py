@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
-from .models import DashboardMetric, NewsItem
+from .models import NewsItem
 
 NOW = datetime.now(UTC)
 
@@ -41,10 +41,4 @@ NEWS = [
         category="Transit",
         url="https://example.com/transit-update",
     ),
-]
-
-METRICS = [
-    DashboardMetric(label="Stories today", value="24", change="+6 from yesterday"),
-    DashboardMetric(label="Local sources", value="8", change="2 added this week"),
-    DashboardMetric(label="Topics tracked", value="12", change="Updated just now"),
 ]
