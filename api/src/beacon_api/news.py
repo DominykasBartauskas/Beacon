@@ -52,9 +52,10 @@ class NewsService:
         cache_ttl_seconds: int = 900,
         fetch_limit: int = 30,
         github_token: str = "",
+        x_bearer_token: str = "",
     ) -> None:
         self._client = client
-        self._sources = default_sources(github_token) if sources is None else sources
+        self._sources = default_sources(github_token, x_bearer_token) if sources is None else sources
         self._enabled = enabled
         self._cache_ttl_seconds = cache_ttl_seconds
         self._fetch_limit = fetch_limit

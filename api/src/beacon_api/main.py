@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             cache_ttl_seconds=settings.news_cache_ttl_seconds,
             fetch_limit=settings.news_fetch_limit,
             github_token=settings.github_token,
+            x_bearer_token=settings.x_bearer_token,
         )
         yield
 

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     news_fetch_limit: int = 30
     news_request_timeout_seconds: float = 6.0
     github_token: str = ""
+    x_bearer_token: str = ""
 
 
 @lru_cache
